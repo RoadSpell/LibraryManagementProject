@@ -14,7 +14,9 @@ namespace LibraryManagementProject.Forms
     public partial class AllBorrowedBooks : Form
     {
         private List<Reader> allReaders = OperationManager.LoadAllRecords<Reader>("Readers");
-        private List<Reader> readersWithBooks;
+        private Dictionary<Reader, List<Guid>> workAround;
+        private Dictionary<Reader, List<Book>> result;
+        List<Book> collectionList;
         public AllBorrowedBooks()
         {
             InitializeComponent();
@@ -28,16 +30,33 @@ namespace LibraryManagementProject.Forms
 
         private void ShowBorrowedInDetail()
         {
+
+            //Get Books for each Guid in Borrowed books in each reader
             foreach (var _reader in allReaders)
             {
                 if (_reader.BorrowedBooks != null && _reader.BorrowedBooks.Count > 0)
                 {
-                    readersWithBooks.Add(_reader);
+                    workAround.Add(_reader, _reader.BorrowedBooks.Keys.ToList());
                 }
             }
 
-            readersWithBooks.GroupBy(reader => reader.BorrowedBooks.Keys);
-            allBorrowedGridView.DataSource = readersWithBooks;
+            foreach (var keyPair in workAround)
+            {
+                for (int i = 0; i < workAround.Values.Count; i++)
+                {
+                    var guidValue = keyPair.Value.ElementAt(i);
+                    var collection = OperationManager.LoadRecordById<Book>("Books", guidValue);
+                    
+                    collectionList.Add(collection);
+                }
+                result.Add(keyPair.Key, collectionList);
+                collectionList.Clear();
+
+            }
+
+           
+            //readersWithBooks.GroupBy(reader => reader.BorrowedBooks.Keys);
+            allBorrowedGridView.DataSource = result;
         }
     }
 }
