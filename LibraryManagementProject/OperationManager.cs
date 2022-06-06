@@ -171,6 +171,12 @@ namespace LibraryManagementProject
             collection.DeleteOne(combinedFilters);
         }
 
+        public static void RefreshBooksOnGrid(DataGridView view)
+        {
+            bookCollection = db.GetCollection<Book>("Books");
+            List<Book> bookList = bookCollection.AsQueryable().ToList<Book>();
+            view.DataSource = bookList;
+        }
         public static void RefreshBooksOnGrid(DataGridView view, TextBox Id,TextBox title, TextBox authors, TextBox editors, TextBox isbn,
             TextBox publishYear, TextBox edition, TextBox publisher, TextBox pageCount, TextBox language, TextBox inStock)
         {
@@ -190,6 +196,8 @@ namespace LibraryManagementProject
             language.Text = view.Rows[0].Cells[9].Value.ToString();
             inStock.Text = view.Rows[0].Cells[10].Value.ToString();
         }
+
+       
 
         public static void CreateMertYilmaz()
         {

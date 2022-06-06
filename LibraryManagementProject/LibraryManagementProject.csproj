@@ -198,6 +198,12 @@
     <Compile Include="Author.cs" />
     <Compile Include="Book.cs" />
     <Compile Include="Editor.cs" />
+    <Compile Include="Forms\AllBorrowedBooks.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AllBorrowedBooks.Designer.cs">
+      <DependentUpon>AllBorrowedBooks.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\BookReturner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -235,6 +241,12 @@
       <DependentUpon>BookSearcher.cs</DependentUpon>
     </Compile>
     <Compile Include="UserSelf.cs" />
+    <EmbeddedResource Include="Forms\AllBorrowedBooks.resx">
+      <DependentUpon>AllBorrowedBooks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BookReturner.resx">
+      <DependentUpon>BookReturner.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoginScreen.resx">
       <DependentUpon>LoginScreen.cs</DependentUpon>
     </EmbeddedResource>

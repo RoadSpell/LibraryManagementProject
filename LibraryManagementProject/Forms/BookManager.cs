@@ -113,5 +113,14 @@ namespace LibraryManagementProject.Forms
             this.Close();
             mainForm.Show();
         }
+
+        private void borrowBttn_Click(object sender, EventArgs e)
+        {
+            if (idTxtBx.Text.Trim() != "" && idTxtBx.Text != null)
+            {
+                UserSelf user = UserSelf.Instance;
+                user.BorrowBook<Book>(Guid.Parse(idTxtBx.Text.Trim()));
+            }
+        }
     }
 }

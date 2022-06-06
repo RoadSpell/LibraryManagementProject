@@ -55,6 +55,7 @@
             this.InStockTxtBx = new System.Windows.Forms.TextBox();
             this.BackBttn = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.showAllBorrowedBttn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -313,11 +314,24 @@
             this.dataGridView1.Size = new System.Drawing.Size(950, 886);
             this.dataGridView1.TabIndex = 25;
             // 
+            // showAllBorrowedBttn
+            // 
+            this.showAllBorrowedBttn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.showAllBorrowedBttn.Location = new System.Drawing.Point(1258, 1018);
+            this.showAllBorrowedBttn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.showAllBorrowedBttn.Name = "showAllBorrowedBttn";
+            this.showAllBorrowedBttn.Size = new System.Drawing.Size(192, 74);
+            this.showAllBorrowedBttn.TabIndex = 26;
+            this.showAllBorrowedBttn.Text = "Show All Borrowed Books";
+            this.showAllBorrowedBttn.UseVisualStyleBackColor = true;
+            this.showAllBorrowedBttn.Click += new System.EventHandler(this.showAllBorrowedBttn_Click);
+            // 
             // BookSearcher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2099, 1111);
+            this.Controls.Add(this.showAllBorrowedBttn);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.BackBttn);
             this.Controls.Add(this.InStockTxtBx);
@@ -382,5 +396,6 @@
         private System.Windows.Forms.TextBox InStockTxtBx;
         private System.Windows.Forms.Button BackBttn;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button showAllBorrowedBttn;
     }
 }

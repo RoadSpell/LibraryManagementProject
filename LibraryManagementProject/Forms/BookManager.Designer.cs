@@ -51,7 +51,6 @@
             this.AuthorsInfoLbl = new System.Windows.Forms.Label();
             this.AuthorsLbl = new System.Windows.Forms.Label();
             this.TitleLbl = new System.Windows.Forms.Label();
-            this.successLbl = new System.Windows.Forms.Label();
             this.ResetBttn = new System.Windows.Forms.Button();
             this.AddBttn = new System.Windows.Forms.Button();
             this.BackBttn = new System.Windows.Forms.Button();
@@ -283,16 +282,6 @@
             this.TitleLbl.TabIndex = 46;
             this.TitleLbl.Text = "Title:";
             // 
-            // successLbl
-            // 
-            this.successLbl.AutoSize = true;
-            this.successLbl.Location = new System.Drawing.Point(2025, 1057);
-            this.successLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.successLbl.Name = "successLbl";
-            this.successLbl.Size = new System.Drawing.Size(51, 20);
-            this.successLbl.TabIndex = 71;
-            this.successLbl.Text = "label1";
-            // 
             // ResetBttn
             // 
             this.ResetBttn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
@@ -384,6 +373,7 @@
             this.borrowBttn.TabIndex = 76;
             this.borrowBttn.Text = "Borrow";
             this.borrowBttn.UseVisualStyleBackColor = false;
+            this.borrowBttn.Click += new System.EventHandler(this.borrowBttn_Click);
             // 
             // BookManager
             // 
@@ -395,7 +385,6 @@
             this.Controls.Add(this.idLbl);
             this.Controls.Add(this.deleteBttn);
             this.Controls.Add(this.updateBttn);
-            this.Controls.Add(this.successLbl);
             this.Controls.Add(this.ResetBttn);
             this.Controls.Add(this.AddBttn);
             this.Controls.Add(this.BackBttn);
@@ -456,7 +445,6 @@
         private System.Windows.Forms.Label AuthorsInfoLbl;
         private System.Windows.Forms.Label AuthorsLbl;
         private System.Windows.Forms.Label TitleLbl;
-        private System.Windows.Forms.Label successLbl;
         private System.Windows.Forms.Button ResetBttn;
         private System.Windows.Forms.Button AddBttn;
         private System.Windows.Forms.Button BackBttn;

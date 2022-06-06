@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LibraryManagementProject.Forms;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Shared;
@@ -79,6 +80,12 @@ namespace LibraryManagementProject
 
             //MainMenu main = new MainMenu();
             mainForm.Show();
+        }
+
+        private void showAllBorrowedBttn_Click(object sender, EventArgs e)
+        {
+            AllBorrowedBooks allBorrowed = new AllBorrowedBooks();
+            allBorrowed.ShowDialog();
         }
     }
 }
