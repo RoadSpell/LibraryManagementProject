@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using LibraryManagementProject.Forms;
+﻿using LibraryManagementProject.Forms;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Shared;
-using MongoDB.Libmongocrypt;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace LibraryManagementProject
 {
@@ -26,8 +18,8 @@ namespace LibraryManagementProject
         private List<Author> gigaChadAuthors = new List<Author>();
         private List<Editor> gigaChadEditors = new List<Editor>();
 
-        private List<Guid> authorsGuids = new List<Guid>();
-        private List<Guid> editorGuids = new List<Guid>();
+        private List<ObjectId> authorsObjectIds;
+        private List<ObjectId> editorObjectIds;
 
         public BookSearcher()
         {
@@ -42,14 +34,35 @@ namespace LibraryManagementProject
             }
         }
 
-        private void SearchBttn_Click(object sender, EventArgs e)   //Get the records by splitting the textboxes, load from the database, then get their Guids (Don't mind the variable names)
+        private void SearchBttn_Click(object sender, EventArgs e)   //Get the records by splitting the textboxes, load from the database, then get their ObjectIds (Don't mind the variable names)
         {
             authorList = AuthorsTxtBx.Text.Trim().Split(',').ToList();
             editorList = EditorsTxtBx.Text.Trim().Split(',').ToList();
 
+            var title = TitleTxtBx.Text.Trim();
+            var isbn = ISBNTxtBx.Text.Trim();
+
+            var dateBool = DateTime.TryParse(PublishYearTxtBx.Text.Trim(), out var date);
+            var dateBson = BsonDateTime.Create(date);
+
+            var edition = EditionTxtBx.Text.Trim();
+
+
+            var publisher = OperationManager.LoadRecordByName<Publisher>("Publishers", PublisherTxtBx.Text.Trim());
+            var publisherId = publisher.Id;
+
+            var pageCount = Int32.Parse(PageCountTxtBx.Text.Trim());
+
+
+            var language = OperationManager.LoadRecordByName<Language>("Languages", LanguageTxtBx.Text.Trim());
+            var languageId= language.Id;
+
+            var inStock = Int32.Parse(InStockTxtBx.Text.Trim());
+
+
             foreach (var a in authorList)
             {
-                gigaChadAuthors.Add(OperationManager.LoadRecordByName<Author>("Books",a));
+                gigaChadAuthors.Add(OperationManager.LoadRecordByName<Author>("Books", a));
             }
 
             foreach (var editor in editorList)
@@ -59,19 +72,17 @@ namespace LibraryManagementProject
 
             foreach (var a in gigaChadAuthors)
             {
-                authorsGuids.Add(a.Id);
+                if (a != null)
+                    authorsObjectIds.Add(a.Id);
             }
 
             foreach (var editor in gigaChadEditors)
             {
-                editorGuids.Add(editor.Id);
+                if (editor != null)
+                    editorObjectIds.Add(editor.Id);
             }
 
-
-            /*OperationManager.LoadRecordsBySearch("Books", TitleTxtBx.Text.Trim(), gigaChadAuthors,
-                EditionTxtBx.Text.Split(',').ToList(), ISBNTxtBx.Text.Trim(),
-                BsonDateTime.Create(PublishYearTxtBx.Text.Trim()), EditionTxtBx.Text.Trim(), PublisherTxtBx.Text.Trim(),
-                Int32.Parse(PageCountTxtBx.Text.Trim()), LanguageTxtBx.Text.Trim(), Int32.Parse(InStockTxtBx.Text.Trim()));*/   //To be fixed
+            searchGridView.DataSource = OperationManager.LoadRecordsBySearch<Book>("Books", title, authorsObjectIds, editorObjectIds, isbn, dateBson, edition, publisherId, pageCount, languageId, inStock);  //To be fixed
         }
 
         private void BackBttn_Click(object sender, EventArgs e)

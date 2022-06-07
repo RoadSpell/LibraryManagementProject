@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace LibraryManagementProject.Forms
 {
     public partial class BookManager : Form
     {
-
         internal MainMenu mainForm;
 
         private List<string> authorListString = new List<string>();
@@ -23,8 +17,8 @@ namespace LibraryManagementProject.Forms
         private List<Author> authorListObjects = new List<Author>();
         private List<Editor> editorListObjects = new List<Editor>();
 
-        private List<Guid> authorsGuids = new List<Guid>();
-        private List<Guid> editorGuids = new List<Guid>();
+        private List<ObjectId> authorsObjectIds = new List<ObjectId>();
+        private List<ObjectId> editorObjectIds = new List<ObjectId>();
 
         internal IMongoCollection<Book> books;
 
@@ -73,38 +67,37 @@ namespace LibraryManagementProject.Forms
 
             foreach (var a in authorListObjects)
             {
-                authorsGuids.Add(a.Id);
+                authorsObjectIds.Add(a.Id);
             }
 
             foreach (var editor in editorListObjects)
             {
-                editorGuids.Add(editor.Id);
+                editorObjectIds.Add(editor.Id);
             }
 
+            Book newBook = new Book(TitleTxtBx.Text.Trim(), authorsObjectIds, editorObjectIds, ISBNTxtBx.Text.Trim(), BsonDateTime.Create(PublishYearTxtBx.Text.Trim()), EditionTxtBx.Text.Trim(), ObjectId.Parse(PublisherTxtBx.Text.Trim()), Int32.Parse(PageCountTxtBx.Text.Trim()),
+                ObjectId.Parse(LanguageTxtBx.Text.Trim()), Int32.Parse(InStockTxtBx.Text.Trim()));
 
-            Book newBook = new Book(TitleTxtBx.Text.Trim(), authorsGuids, editorGuids, ISBNTxtBx.Text.Trim(), BsonDateTime.Create(PublishYearTxtBx.Text.Trim()), EditionTxtBx.Text.Trim(), Guid.Parse(PublisherTxtBx.Text.Trim()), Int32.Parse(PageCountTxtBx.Text.Trim()),
-                Guid.Parse(LanguageTxtBx.Text.Trim()), Int32.Parse(InStockTxtBx.Text.Trim()));
-
-            OperationManager.UpsertRecord("Books", Guid.Empty, newBook);
+            OperationManager.UpsertRecord("Books", ObjectId.Empty, newBook);
             OperationManager.RefreshBooksOnGrid(bookGrid, idTxtBx, TitleTxtBx, AuthorsTxtBx, EditorsTxtBx, ISBNTxtBx, PublishYearTxtBx, EditionTxtBx, PublisherTxtBx, PageCountTxtBx, LanguageTxtBx, InStockTxtBx);
         }
 
         private void updateBttn_Click(object sender, EventArgs e)
         {
-            Book newBook = new Book(TitleTxtBx.Text.Trim(), authorsGuids, editorGuids, ISBNTxtBx.Text.Trim(), BsonDateTime.Create(PublishYearTxtBx.Text.Trim()), EditionTxtBx.Text.Trim(), Guid.Parse(PublisherTxtBx.Text.Trim()), Int32.Parse(PageCountTxtBx.Text.Trim()),
-                Guid.Parse(LanguageTxtBx.Text.Trim()), Int32.Parse(InStockTxtBx.Text.Trim()));
+            Book newBook = new Book(TitleTxtBx.Text.Trim(), authorsObjectIds, editorObjectIds, ISBNTxtBx.Text.Trim(), BsonDateTime.Create(PublishYearTxtBx.Text.Trim()), EditionTxtBx.Text.Trim(), ObjectId.Parse(PublisherTxtBx.Text.Trim()), Int32.Parse(PageCountTxtBx.Text.Trim()),
+                ObjectId.Parse(LanguageTxtBx.Text.Trim()), Int32.Parse(InStockTxtBx.Text.Trim()));
 
-            //OperationManager.UpdateRecord<Book>("Books", TitleTxtBx.Text.Trim(), authorsGuids, editorGuids, ISBNTxtBx.Text.Trim(), BsonDateTime.Create(PublishYearTxtBx.Text.Trim()), EditionTxtBx.Text.Trim(), Guid.Parse(PublisherTxtBx.Text.Trim()), Int32.Parse(PageCountTxtBx.Text.Trim()),
+            //OperationManager.UpdateRecord<Book>("Books", TitleTxtBx.Text.Trim(), authorsObjectIds, editorObjectIds, ISBNTxtBx.Text.Trim(), BsonDateTime.Create(PublishYearTxtBx.Text.Trim()), EditionTxtBx.Text.Trim(), ObjectId.Parse(PublisherTxtBx.Text.Trim()), Int32.Parse(PageCountTxtBx.Text.Trim()),
             //LanguageTxtBx.Text.Trim(), Int32.Parse(InStockTxtBx.Text.Trim()));
 
-            OperationManager.UpsertRecord("Books", Guid.Parse(idTxtBx.Text.Trim()), newBook);
+            OperationManager.UpsertRecord("Books", ObjectId.Parse(idTxtBx.Text.Trim()), newBook);
 
             OperationManager.RefreshBooksOnGrid(bookGrid, idTxtBx, TitleTxtBx, AuthorsTxtBx, EditorsTxtBx, ISBNTxtBx, PublishYearTxtBx, EditionTxtBx, PublisherTxtBx, PageCountTxtBx, LanguageTxtBx, InStockTxtBx);
         }
 
         private void deleteBttn_Click(object sender, EventArgs e)
         {
-            OperationManager.DeleteRecord<Book>("Books", Guid.Parse(idTxtBx.Text.Trim()));
+            OperationManager.DeleteRecord<Book>("Books", ObjectId.Parse(idTxtBx.Text.Trim()));
             OperationManager.RefreshBooksOnGrid(bookGrid, idTxtBx, TitleTxtBx, AuthorsTxtBx, EditorsTxtBx, ISBNTxtBx, PublishYearTxtBx, EditionTxtBx, PublisherTxtBx, PageCountTxtBx, LanguageTxtBx, InStockTxtBx);
         }
 
@@ -119,7 +112,7 @@ namespace LibraryManagementProject.Forms
             if (idTxtBx.Text.Trim() != "" && idTxtBx.Text != null)
             {
                 UserSelf user = UserSelf.Instance;
-                user.BorrowBook<Book>(Guid.Parse(idTxtBx.Text.Trim()));
+                user.BorrowBook<Book>(idTxtBx.Text.Trim());
             }
         }
     }

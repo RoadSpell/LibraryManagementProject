@@ -1,36 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Shared;
-using MongoDB.Libmongocrypt;
+using System.Collections.Generic;
 
 namespace LibraryManagementProject
 {
-     public class Reader
+    public class Reader
     {
         [BsonId]
-        internal Guid Id { get; set; }
+        internal ObjectId Id { get; set; }
 
-        internal string FullName { get; set; }
-        internal Dictionary<Guid, BsonDateTime> BorrowedBooks { get; set; } //Book id
+        public string FullName { get; set; }
+        public IDictionary<string, BsonDateTime> BorrowedBooks { get; set; } //Book id
 
         public Reader()
         {
-            Id = Guid.Empty;
+            Id = ObjectId.GenerateNewId();
             FullName = "UNKNOWN";
             BorrowedBooks = null;
         }
 
-        public Reader(string fullname, Dictionary<Guid, BsonDateTime> books)
+        public Reader(string fullname, IDictionary<string, BsonDateTime> books)
         {
-            Id = Guid.Empty;
+            Id = ObjectId.GenerateNewId();
             this.FullName = fullname;
             this.BorrowedBooks = books;
         }
-
     }
 }

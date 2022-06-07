@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LibraryManagementProject.Forms;
+using System;
 using System.Windows.Forms;
-using LibraryManagementProject.Forms;
 
 namespace LibraryManagementProject
 {
     public partial class MainMenu : Form
     {
-
-
         public MainMenu()
         {
             InitializeComponent();
             LogInLbl.Text = "You are currently not logged in.";
-            OperationManager.CreateMertYilmaz();
+
             try
             {
                 OperationManager.MongoCRUD();
@@ -29,6 +20,7 @@ namespace LibraryManagementProject
                 MessageBox.Show("Please check your internet connection!", "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 //throw;
             }
+            OperationManager.CreateFilizYilmaz();
         }
 
         public void MainMenuHasLoggedIn()
@@ -54,7 +46,7 @@ namespace LibraryManagementProject
 
         private void LogInBttnMainMenu_Click(object sender, EventArgs e)
         {
-            LoginScreen login = new LoginScreen();
+            LoginScreen login = new LoginScreen(this);
             login.ShowDialog();
         }
 
@@ -71,15 +63,21 @@ namespace LibraryManagementProject
             {
                 MessageBox.Show("Please log in!", "Not Logged In Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-            
         }
 
         private void returnBooksBttn_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            BookReturner returner = new BookReturner();
-            returner.mainForm = this;
-            returner.Show();
+            if (LoginScreen.hasLoggedIn)
+            {
+                this.Hide();
+                BookReturner returner = new BookReturner();
+                returner.mainForm = this;
+                returner.Show();
+            }
+            else
+            {
+                MessageBox.Show("Please log in!", "Not Logged In Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
         }
     }
 }

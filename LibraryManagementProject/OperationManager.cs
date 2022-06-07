@@ -1,16 +1,10 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using MongoDB.Driver;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver.Support;
-using MongoDB.Driver.Linq;
-using MongoDB.Shared;
-using MongoDB.Libmongocrypt;
 
 namespace LibraryManagementProject
 {
@@ -19,7 +13,6 @@ namespace LibraryManagementProject
         private static IMongoDatabase db;
         private static IMongoCollection<Book> bookCollection;
         private static string databaseName = "library";
-
 
         //connection string: mongodb://localhost:27017/
 
@@ -35,19 +28,18 @@ namespace LibraryManagementProject
             collection.InsertOne(record);
         }
 
-
         public static List<T> LoadAllRecords<T>(string table)
         {
             var collection = db.GetCollection<T>(table);
-            return collection.Find(new BsonDocument()).ToList();
+            return collection.Find(Builders<T>.Filter.Empty).ToList();
         }
 
-        public static T LoadRecordById<T>(string table, Guid id)
+        public static T LoadRecordById<T>(string table, ObjectId id)
         {
             var collection = db.GetCollection<T>(table);
             var filter = Builders<T>.Filter.Eq("Id", id);
 
-            return collection.Find(filter).First();                                 
+            return collection.Find(filter).First();
         }
 
         public static T LoadRecordByName<T>(string table, string name)
@@ -55,11 +47,11 @@ namespace LibraryManagementProject
             var collection = db.GetCollection<T>(table);
             var filter = Builders<T>.Filter.Eq("FullName", name);
 
-            return collection.Find(filter).First();
+            return collection.Find(filter).FirstOrDefault();
         }
 
-        public static List<T> LoadRecordsBySearch<T>(string table, string title, List<Guid> authors, List<Guid> editors,
-            string ISBN, BsonDateTime publishYear, string edition, string publisher, int pageCount, string language,
+        public static List<T> LoadRecordsBySearch<T>(string table, string title, List<ObjectId> authors, List<ObjectId> editors,
+            string ISBN, BsonDateTime publishYear, string edition, ObjectId publisher, int pageCount, ObjectId language,
             int inStock)
         {
             var collection = db.GetCollection<T>(table);
@@ -79,19 +71,18 @@ namespace LibraryManagementProject
             return collection.Find(combinedFilters).ToList();
         }
 
-
-        public static void UpsertRecord<T>(string table, Guid? id, T record)        //Insert if not exists; update if exists, needs more testing
+        public static void UpsertRecord<T>(string table, ObjectId? id, T record)        //Insert if not exists; update if exists, needs more testing
         {
             var collection = db.GetCollection<T>(table);
             var result = collection.ReplaceOne(
                 new BsonDocument("_id", id),
                 record,
-                new UpdateOptions { IsUpsert = true }
+                new ReplaceOptions { IsUpsert = true }
             );
         }
 
-        public static void UpdateRecord<T>(string table, string title, List<Guid> authors, List<Guid> editors,
-            string ISBN, BsonDateTime publishYear, string edition, Guid publisher, int pageCount, string language,
+        public static void UpdateRecord<T>(string table, string title, List<ObjectId> authors, List<ObjectId> editors,
+            string ISBN, BsonDateTime publishYear, string edition, ObjectId publisher, int pageCount, string language,
             int inStock)
         {
             //var updateDef = Builders<T>.Update.Set()
@@ -120,28 +111,23 @@ namespace LibraryManagementProject
 
             /*else if (table == "Authors")
             {
-
             }
-
             else if (table == "Editors")
             {
-                
             }*/
-
-
         }
 
-        public static void DeleteRecord<T>(string table, Guid id)
+        public static void DeleteRecord<T>(string table, ObjectId id)
         {
             var collection = db.GetCollection<T>(table);
             var filter = Builders<T>.Filter.Eq("Id", id);
             collection.DeleteOne(filter);
         }
 
-        public static T LoadPairRecord<T>(string table, Guid id, string keyName ,T valueName)
+        public static T LoadPairRecord<T>(string table, ObjectId id, string keyName, T valueName)
         {
             var collection = db.GetCollection<T>(table);
-            
+
             var idFilter = Builders<T>.Filter.Eq("Id", id);
             var customValueFilter = Builders<T>.Filter.Eq(keyName, valueName);
             var combinedFilters = Builders<T>.Filter.And(idFilter, customValueFilter);
@@ -149,7 +135,7 @@ namespace LibraryManagementProject
             return collection.Find(combinedFilters).First();
         }
 
-        public static List<T> LoadAllPairRecords<T>(string table, Guid id, string keyName, T valueName)
+        public static List<T> LoadAllPairRecords<T>(string table, ObjectId id, string keyName, T valueName)
         {
             var collection = db.GetCollection<T>(table);
 
@@ -160,7 +146,7 @@ namespace LibraryManagementProject
             return collection.Find(combinedFilters).ToList();
         }
 
-        public static void DeletePairRecord<T>(string table, Guid id, string keyName, T valueName)
+        public static void DeletePairRecord<T>(string table, ObjectId id, string keyName, T valueName)
         {
             var collection = db.GetCollection<T>(table);
 
@@ -177,7 +163,8 @@ namespace LibraryManagementProject
             List<Book> bookList = bookCollection.AsQueryable().ToList<Book>();
             view.DataSource = bookList;
         }
-        public static void RefreshBooksOnGrid(DataGridView view, TextBox Id,TextBox title, TextBox authors, TextBox editors, TextBox isbn,
+
+        public static void RefreshBooksOnGrid(DataGridView view, TextBox Id, TextBox title, TextBox authors, TextBox editors, TextBox isbn,
             TextBox publishYear, TextBox edition, TextBox publisher, TextBox pageCount, TextBox language, TextBox inStock)
         {
             bookCollection = db.GetCollection<Book>("Books");
@@ -197,17 +184,12 @@ namespace LibraryManagementProject
             inStock.Text = view.Rows[0].Cells[10].Value.ToString();
         }
 
-       
-
-        public static void CreateMertYilmaz()
+        public static void CreateFilizYilmaz()
         {
-            Reader mert = new Reader();
-            mert.Id = Guid.NewGuid();
-            mert.FullName = "Mert Yılmaz";
-            mert.BorrowedBooks = null;
+            Reader filiz = new Reader("Filiz Yılmaz", new Dictionary<string, BsonDateTime>());
+            filiz.BorrowedBooks.Add("629e169064867bfbc52fb1d1", BsonDateTime.Create(DateTime.Now));
 
-            UpsertRecord("Readers", mert.Id, mert);
+            UpsertRecord("Readers", filiz.Id, filiz);
         }
-
     }
 }

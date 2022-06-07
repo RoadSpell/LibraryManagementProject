@@ -1,32 +1,23 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Driver;
-using MongoDB.Bson;
-using MongoDB.Shared;
-using MongoDB.Libmongocrypt;
 using System.Windows.Forms;
 
 namespace LibraryManagementProject
 {
-    public sealed class UserSelf : Reader 
+    public sealed class UserSelf : Reader
     {
-        internal new static Guid Id = mySelf.Id;    //What if someone else sets your id to someone else's
-        private static Reader mySelf = OperationManager.LoadRecordById<Reader>("Readers", Id);
-        internal new static string FullName = mySelf.FullName;
-        internal new static Dictionary<Guid, BsonDateTime> BorrowedBooks = mySelf.BorrowedBooks;
-            
+        //private static Reader mySelf = OperationManager.LoadRecordById<Reader>("Readers", Id);
+        public new static ObjectId Id;
 
-        
+        public new static string FullName;
+        public new static IDictionary<string, BsonDateTime> BorrowedBooks;
 
         private UserSelf()
         {
-            
         }
 
-        private static UserSelf instance = null;
+        private static readonly UserSelf instance = null;
 
         public static UserSelf Instance
         {
@@ -40,16 +31,15 @@ namespace LibraryManagementProject
             }
         }
 
-        public void BorrowBook<T>(Guid id) //Book ID
+        public void BorrowBook<T>(string id) //Book ID
         {
-            var book = OperationManager.LoadRecordById<Book>("Books", id);
+            var book = OperationManager.LoadRecordById<Book>("Books", ObjectId.Parse(id));
             if (book.InStock > 0)
             {
                 book.InStock -= 1;
-                BorrowedBooks.Add(book.Id, BsonDateTime.Create(DateTime.Now));  //Add the borrowed book to User Self, not sure if it is required
+                BorrowedBooks.Add(id, BsonDateTime.Create(DateTime.Now));  //Add the borrowed book to User Self, not sure if it is required
                 OperationManager.UpsertRecord("Readers", Id, this);
-                mySelf = OperationManager.LoadRecordById<Reader>("Readers", Id);    //Refresh myself
-
+                //mySelf = OperationManager.LoadRecordById<Reader>("Readers", Id);    //Refresh myself
             }
             else
             {
@@ -57,26 +47,28 @@ namespace LibraryManagementProject
             }
         }
 
-        public void ReturnBook<T>(Guid id) //Book ID
+        public void ReturnBook<T>(string id) //Book ID
         {
             if (BorrowedBooks.ContainsKey(id))
             {
-                var book = OperationManager.LoadRecordById<Book>("Books", id);
+                var book = OperationManager.LoadRecordById<Book>("Books", ObjectId.Parse(id));
                 book.InStock += 1;
                 OperationManager.UpsertRecord("Books", book.Id, book);
 
-
-                BorrowedBooks.Remove(book.Id);
-                OperationManager.UpsertRecord("Readers", Id, mySelf);
-                mySelf = OperationManager.LoadRecordById<Reader>("Readers", Id);    //Refresh myself
+                BorrowedBooks.Remove(id);
+                OperationManager.UpsertRecord("Readers", Id, this);
+                //mySelf = OperationManager.LoadRecordById<Reader>("Readers", Id);    //Refresh myself
                 //OperationManager.DeleteRecord<BorrowedBooks>(); //To be fixed
             }
-
         }
 
         public void ConvertReaderToUserSelf(Reader _reader)
         {
-            BorrowedBooks = _reader.BorrowedBooks;
+            if (BorrowedBooks != null)
+            {
+                BorrowedBooks = _reader.BorrowedBooks;
+            }
+
             FullName = _reader.FullName;
             Id = _reader.Id;
         }

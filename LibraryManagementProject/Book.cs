@@ -1,49 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Driver;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Shared;
-using MongoDB.Libmongocrypt;
+using System;
+using System.Collections.Generic;
 
 namespace LibraryManagementProject
 {
     internal class Book
     {
         [BsonId]
-        internal Guid Id { get; }
+        public ObjectId Id { get; }
 
-        private string Title { get; set; }
-        private List<Guid> Authors { get; set; } //TBC
-        private List<Guid> Editors { get; set; } //TBC
-        private string ISBN { get; set; }
-        private BsonDateTime PublishYear { get; set; }
-        private string Edition { get; set; }
-        private Guid Publisher { get; set; } //TBC
+        public string Title { get; set; }
+        public List<ObjectId> Authors { get; set; } //TBC
+        public List<ObjectId> Editors { get; set; } //TBC
+        public string ISBN { get; set; }
+        public BsonDateTime PublishYear { get; set; }
+        public string Edition { get; set; }
+        public ObjectId Publisher { get; set; } //TBC
         private int PageCount { get; set; }
-        private Guid Language { get; set; }
+        public ObjectId Language { get; set; }
         public int InStock { get; set; }
-
 
         public Book()
         {
-            Id = Guid.Empty;
-            Authors = new List<Guid>();
-            Editors = new List<Guid>();
-            Publisher = Guid.Empty;
+            Id = ObjectId.Empty;
+            Authors = new List<ObjectId>();
+            Editors = new List<ObjectId>();
+            Publisher = ObjectId.Empty;
             ISBN = "";
             PublishYear = BsonDateTime.Create(DateTime.Now);
             Edition = "";
-            Publisher = Guid.Empty;
+            Publisher = ObjectId.Empty;
             PageCount = -1;
-            Language = Guid.Empty;
+            Language = ObjectId.Empty;
             InStock = -1;
         }
 
-        public Book(string _title, List<Guid> _authors, List<Guid> _editors, string _isbn, BsonDateTime _publishYear, string _edition, Guid _publisher, int _pageCount, Guid _language, int _inStock)
+        public Book(string _title, List<ObjectId> _authors, List<ObjectId> _editors, string _isbn, BsonDateTime _publishYear, string _edition, ObjectId _publisher, int _pageCount, ObjectId _language, int _inStock)
         {
             Title = _title;
             Authors = _authors;
@@ -58,15 +51,14 @@ namespace LibraryManagementProject
             InStock = _inStock;
         }
 
-
-        private Guid GetBookGuidByTitle(string title)
+        private ObjectId GetBookObjectIdByTitle(string title)
         {
             if (title == this.Title)
             {
-                return (Guid)Id;
+                return (ObjectId)Id;
             }
 
-            return Guid.Parse("-1");
+            return ObjectId.Parse("-1");
         }
     }
 }

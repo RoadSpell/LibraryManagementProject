@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace LibraryManagementProject
 {
     internal class Editor
     {
         [BsonId]
-        internal Guid Id { get; }
+        public ObjectId Id { get; }
 
-        private string FullName { get; set; }
-        private List<Guid> EditedBooks { get; set; }
-
+        public string FullName { get; set; }
+        public List<ObjectId> EditedBooks { get; set; }
     }
 }
-

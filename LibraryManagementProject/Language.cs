@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace LibraryManagementProject
 {
     internal class Language
     {
         [BsonId]
-        internal Guid Id { get; }
+        public ObjectId Id { get; }
 
-        private string FullName { get; set; }
-        private List<Guid> BooksInLanguage { get; set; }
+        public string FullName { get; set; }
+        public List<ObjectId> BooksInLanguage { get; set; }
 
-        private Guid GetLanguageGuidByName(string name)
+        public ObjectId GetLanguageObjectIdByName(string name)
         {
             if (name == this.FullName)
             {
                 return this.Id;
             }
 
-            return Guid.Parse("-1");
+            return ObjectId.Parse("-1");
         }
     }
 }
